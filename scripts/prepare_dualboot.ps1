@@ -1,7 +1,7 @@
 param(
     [switch]$DryRun,
     [switch]$ShrinkDisk,
-    [int]$ShrinkGB = 128,
+    [int]$ShrinkGB = 115,
     [string]$UsbDriveLetter = ""
 )
 
