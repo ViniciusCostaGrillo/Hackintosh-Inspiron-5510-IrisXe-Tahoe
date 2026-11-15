@@ -7,7 +7,7 @@
 	<key>CFBundleGetInfoString</key>
 	<string>v1.0 Dell Inspiron 15 5510 USB Map</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.dortania.USBToolBox.map</string>
+	<string>com.dhinakg.USBToolBox.map</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -25,7 +25,7 @@
 		<key>Inspiron5510_CPU_TXHC</key>
 		<dict>
 			<key>CFBundleIdentifier</key>
-			<string>com.dortania.USBToolBox</string>
+			<string>com.dhinakg.USBToolBox.kext</string>
 			<key>IOClass</key>
 			<string>USBToolBox</string>
 			<key>IOMatchCategory</key>
@@ -33,7 +33,7 @@
 			<key>IOPCIMatch</key>
 			<string>0x9A138086</string>
 			<key>IOProviderClass</key>
-			<string>AppleUSBXHCI</string>
+			<string>IOPCIDevice</string>
 			<key>IOProviderMergeProperties</key>
 			<dict>
 				<key>port-count</key>
@@ -83,7 +83,7 @@
 		<key>Inspiron5510_PCH_XHCI</key>
 		<dict>
 			<key>CFBundleIdentifier</key>
-			<string>com.dortania.USBToolBox</string>
+			<string>com.dhinakg.USBToolBox.kext</string>
 			<key>IOClass</key>
 			<string>USBToolBox</string>
 			<key>IOMatchCategory</key>
@@ -91,7 +91,7 @@
 			<key>IOPCIMatch</key>
 			<string>0xA0ED8086</string>
 			<key>IOProviderClass</key>
-			<string>AppleUSBXHCI</string>
+			<string>IOPCIDevice</string>
 			<key>IOProviderMergeProperties</key>
 			<dict>
 				<key>port-count</key>
@@ -229,7 +229,7 @@
 	</dict>
 	<key>OSBundleLibraries</key>
 	<dict>
-		<key>com.dortania.USBToolBox</key>
+		<key>com.dhinakg.USBToolBox.kext</key>
 		<string>1.0.0</string>
 	</dict>
 	<key>OSBundleRequired</key>
