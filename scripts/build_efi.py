@@ -19,12 +19,14 @@ MACSERIAL = DEPS / "OpenCore-1.0.8" / "Utilities" / "macserial" / "macserial.exe
 
 ACCEL_BOOT_ARGS = (
     "-v keepsyms=1 debug=0x100 IGLogLevel=3 -ngreentglwithgfx -allow3d "
-    "-disablegfxfirmware ngreenSched=4 -ngreenxefix gfxrst=1 "
-    "amfi_get_out_of_my_way=1 alcid=11"
+    "-disablegfxfirmware ngreen-dmc=tgl -ngreenv189 -ngreenkeepefi "
+    "-ngreenxefix -ngreenfixbootmode amfi_get_out_of_my_way=1 "
+    "ngreenSched=4 ngreenV142=3 gfxrst=1 ngreenpm=22 alcid=11"
 )
 
 INSTALL_BOOT_ARGS = (
-    "-v keepsyms=1 debug=0x100 -igfxvesa amfi_get_out_of_my_way=1 alcid=11"
+    "-v keepsyms=1 debug=0x100 -igfxvesa -vi2c-force-polling "
+    "amfi_get_out_of_my_way=1 alcid=11"
 )
 
 
@@ -82,20 +84,26 @@ def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
         keep_patches.append(patch)
     cfg["ACPI"]["Patch"] = keep_patches
 
-    # 3. DeviceProperties > Add: Native 8086:9A49 Iris Xe on GFX0 + Realtek ALC236 audio on HDAS
-    cfg["DeviceProperties"]["Add"]["PciRoot(0x0)/Pci(0x2,0x0)"] = {
-        "AAPL,ig-platform-id": bytes.fromhex("0000499A"),
-        "AAPL,slot-name": "built-in",
-        "built-in": bytes.fromhex("00"),
-        "complete-modeset": bytes.fromhex("01000000"),
-        "device-id": bytes.fromhex("499A0000"),
-        "enable-max-pixel-clock-override": bytes.fromhex("01000000"),
-        "force-online": bytes.fromhex("01000000"),
-        "framebuffer-patch-enable": bytes.fromhex("01000000"),
-        "hda-gfx": "onboard-1",
-        "model": "Intel Iris Xe Graphics",
-        "rps-control": bytes.fromhex("01000000"),
-    }
+    # 3. DeviceProperties > Add: Native 8086:9A49 Iris Xe on GFX0 (or safe VESA dummy ID in install mode) + Realtek ALC236 audio on HDAS
+    if accelerated:
+        cfg["DeviceProperties"]["Add"]["PciRoot(0x0)/Pci(0x2,0x0)"] = {
+            "AAPL,ig-platform-id": bytes.fromhex("0000499A"),
+            "AAPL,slot-name": "built-in",
+            "built-in": bytes.fromhex("00"),
+            "complete-modeset": bytes.fromhex("01000000"),
+            "device-id": bytes.fromhex("499A0000"),
+            "enable-max-pixel-clock-override": bytes.fromhex("01000000"),
+            "force-online": bytes.fromhex("01000000"),
+            "framebuffer-patch-enable": bytes.fromhex("01000000"),
+            "hda-gfx": "onboard-1",
+            "model": "Intel Iris Xe Graphics",
+            "rps-control": bytes.fromhex("01000000"),
+        }
+    else:
+        cfg["DeviceProperties"]["Add"]["PciRoot(0x0)/Pci(0x2,0x0)"] = {
+            "AAPL,ig-platform-id": bytes.fromhex("78563412"),
+            "device-id": bytes.fromhex("FFFF0000"),
+        }
     cfg["DeviceProperties"]["Add"]["PciRoot(0x0)/Pci(0x1F,0x3)"] = {
         "layout-id": (11).to_bytes(4, byteorder="little"),
     }
@@ -142,8 +150,9 @@ def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
     cfg["Kernel"]["Emulate"]["Cpuid1Data"] = bytes.fromhex("65060A00000000000000000000000000")
     cfg["Kernel"]["Emulate"]["Cpuid1Mask"] = bytes.fromhex("FFFFFFFF000000000000000000000000")
 
-    # 6. Misc > Boot: Timeout = 5s so dual-boot picker is comfortable
+    # 6. Misc > Boot: Timeout = 5s and HideAuxiliary = False so recovery DMG and Reset NVRAM appear immediately
     cfg["Misc"]["Boot"]["Timeout"] = 5
+    cfg["Misc"]["Boot"]["HideAuxiliary"] = False
 
     # 7. NVRAM: CPU name, boot-args, and Delete > boot-args
     oc_vendor_guid = "4D1FDA02-38C7-4A6A-9CC6-4BCCA8B30102"

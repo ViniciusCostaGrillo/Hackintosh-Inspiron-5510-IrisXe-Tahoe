@@ -117,10 +117,15 @@ sync
   * `AAPL,ig-platform-id`: `<0000499A>`
   * `device-id`: `<499A0000>`
   * `model`: `"Intel Iris Xe Graphics"`
-* **Substitui `-igfxvesa` pelas flags de aceleração Tiger Lake nos `boot-args`:**
+* **Substitui `-igfxvesa` pelas flags completas de aceleração Tiger Lake nos `boot-args`:**
   ```text
-  -v keepsyms=1 debug=0x100 IGLogLevel=3 -ngreentglwithgfx -allow3d -disablegfxfirmware ngreenSched=4 -ngreenxefix gfxrst=1 amfi_get_out_of_my_way=1 alcid=11
+  -v keepsyms=1 debug=0x100 IGLogLevel=3 -ngreentglwithgfx -allow3d -disablegfxfirmware ngreen-dmc=tgl -ngreenv189 -ngreenkeepefi -ngreenxefix -ngreenfixbootmode amfi_get_out_of_my_way=1 ngreenSched=4 ngreenV142=3 gfxrst=1 ngreenpm=22 alcid=11
   ```
+  * `ngreen-dmc=tgl`: Carrega o firmware nativo Tiger Lake DMC v2.12 e ativa a proteção `V101T`/`V102T`/`V103` das Power Wells para nunca perder interrupção de VSync.
+  * `-ngreenv189`: Ativa o patch inteligente de sinalização `AccessComplete` no DYLD, evitando travamentos de 234 ms do `WindowServer`.
+  * `-ngreenkeepefi -ngreenfixbootmode`: Corrige o modo inicial `0xfffffffb` (`kIOFBBootProgrammable`) lendo os timings reais 1920x1080 do CRTC da sua tela.
+  * `ngreenV142=3`: Habilita o motor nativo de Blit 3D do silício Tiger Lake real.
+  * `ngreenpm=22`: Ativa o gerenciamento de energia HWP (`PL1 = 22W`) e tabela de estados ociosos C-state.
 * **Limpa a NVRAM (`Delete > boot-args`):** Força o OpenCore a descartar o `-igfxvesa` antigo salvo na NVRAM e aplicar imediatamente as flags do Metal 2.
 
 Agora **reinicie o notebook** e dê boot novamente pelo pendrive (`F12`).

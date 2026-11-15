@@ -498,41 +498,11 @@
 			<dict>
 				<key>AAPL,ig-platform-id</key>
 				<data>
-				AABJmg==
-				</data>
-				<key>AAPL,slot-name</key>
-				<string>built-in</string>
-				<key>built-in</key>
-				<data>
-				AA==
-				</data>
-				<key>complete-modeset</key>
-				<data>
-				AQAAAA==
+				eFY0Eg==
 				</data>
 				<key>device-id</key>
 				<data>
-				SZoAAA==
-				</data>
-				<key>enable-max-pixel-clock-override</key>
-				<data>
-				AQAAAA==
-				</data>
-				<key>force-online</key>
-				<data>
-				AQAAAA==
-				</data>
-				<key>framebuffer-patch-enable</key>
-				<data>
-				AQAAAA==
-				</data>
-				<key>hda-gfx</key>
-				<string>onboard-1</string>
-				<key>model</key>
-				<string>Intel Iris Xe Graphics</string>
-				<key>rps-control</key>
-				<data>
-				AQAAAA==
+				//8AAA==
 				</data>
 			</dict>
 		</dict>
@@ -1308,7 +1278,7 @@
 			<key>HibernateSkipsPicker</key>
 			<false/>
 			<key>HideAuxiliary</key>
-			<true/>
+			<false/>
 			<key>InstanceIdentifier</key>
 			<string></string>
 			<key>LauncherOption</key>
@@ -1434,7 +1404,7 @@
 				AAAAAAAAAAAAAAAAAAA=
 				</data>
 				<key>boot-args</key>
-				<string>-v keepsyms=1 debug=0x100 -igfxvesa amfi_get_out_of_my_way=1 alcid=11</string>
+				<string>-v keepsyms=1 debug=0x100 -igfxvesa -vi2c-force-polling amfi_get_out_of_my_way=1 alcid=11</string>
 				<key>csr-active-config</key>
 				<data>
 				EwoAAA==

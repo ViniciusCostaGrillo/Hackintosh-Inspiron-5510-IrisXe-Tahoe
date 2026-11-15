@@ -22,16 +22,22 @@ if (-not (Test-Path $BundleTar)) {
 }
 
 $volC = Get-Volume -DriveLetter C
+$macosVol = Get-Volume | Where-Object { $_.FileSystemLabel -eq "MACOS" } | Select-Object -First 1
 $freeGB = [math]::Round($volC.SizeRemaining / 1GB, 2)
 $totalGB = [math]::Round($volC.Size / 1GB, 2)
-$targetWindowsGB = [math]::Round($totalGB - $ShrinkGB, 2)
 
 Write-Output "=== Dell Inspiron 15 5510 Dual-Boot Preparation ==="
 Write-Output "Volume C: Total = $totalGB GB | Free = $freeGB GB"
-Write-Output "Planned macOS APFS allocation = $ShrinkGB GB | Remaining Windows C: = $targetWindowsGB GB"
 
-if ($targetWindowsGB -lt 120) {
-    throw "Safety check failed: Windows C: partition would be smaller than 120 GB ($targetWindowsGB GB)."
+if ($null -ne $macosVol) {
+    $macosGB = [math]::Round($macosVol.Size / 1GB, 2)
+    Write-Output "MACOS partition already exists ($($macosVol.DriveLetter): $macosGB GB). Skipping shrink calculation."
+} else {
+    $targetWindowsGB = [math]::Round($totalGB - $ShrinkGB, 2)
+    Write-Output "Planned macOS APFS allocation = $ShrinkGB GB | Remaining Windows C: = $targetWindowsGB GB"
+    if ($targetWindowsGB -lt 120) {
+        throw "Safety check failed: Windows C: partition would be smaller than 120 GB ($targetWindowsGB GB)."
+    }
 }
 
 if ($DryRun) {
@@ -39,7 +45,7 @@ if ($DryRun) {
     exit 0
 }
 
-if ($ShrinkDisk) {
+if ($ShrinkDisk -and $null -eq $macosVol) {
     $newSizeBytes = [uint64]($volC.Size - ($ShrinkGB * 1GB))
     Write-Output "Shrinking C: to $([math]::Round($newSizeBytes / 1GB, 2)) GB..."
     Resize-Partition -DriveLetter C -Size $newSizeBytes
