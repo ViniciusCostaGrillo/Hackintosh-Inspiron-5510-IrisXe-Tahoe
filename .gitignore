@@ -1,0 +1,7 @@
+﻿deps/
+acpi_dump/
+dist/
+.pytest_cache/
+__pycache__/
+.superpowers/
+
