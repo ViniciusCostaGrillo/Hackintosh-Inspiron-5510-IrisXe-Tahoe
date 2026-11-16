@@ -1085,7 +1085,7 @@
 				<key>Comment</key>
 				<string>fallback (needs HeliPort); disabled in favour of AirportItlwm</string>
 				<key>Enabled</key>
-				<false/>
+				<true/>
 				<key>ExecutablePath</key>
 				<string>Contents/MacOS/itlwm</string>
 				<key>MaxKernel</key>
@@ -1103,7 +1103,7 @@
 				<key>Comment</key>
 				<string>laobamac AirportItlwm-Tahoe v2.4.0-alpha 738d4c6 (native IO80211Family/Skywalk)</string>
 				<key>Enabled</key>
-				<true/>
+				<false/>
 				<key>ExecutablePath</key>
 				<string>Contents/MacOS/AirportItlwm</string>
 				<key>MaxKernel</key>

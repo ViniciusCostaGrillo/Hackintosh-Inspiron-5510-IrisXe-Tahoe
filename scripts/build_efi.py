@@ -148,6 +148,12 @@ def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
         if bpath == "NootedGreen.kext":
             kext = copy.deepcopy(kext)
             kext["Enabled"] = accelerated
+        if bpath == "AirportItlwm.kext":
+            kext = copy.deepcopy(kext)
+            kext["Enabled"] = accelerated
+        if bpath == "itlwm.kext":
+            kext = copy.deepcopy(kext)
+            kext["Enabled"] = not accelerated
         new_kexts.append(kext)
         if bpath == "Lilu.kext":
             new_kexts.append(
