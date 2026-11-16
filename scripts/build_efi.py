@@ -139,12 +139,13 @@ def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
         "layout-id": (11).to_bytes(4, byteorder="little"),
     }
 
-    # 4. Kernel > Add: remove CpuTopologyRebuild (divides by zero at +6794 when E-Core count is 0!) & UTBDefault;
-    # add UTBMap & AppleALC; toggle NootedGreen
+    # 4. Kernel > Add: remove CpuTopologyRebuild (divides by zero at +6794 when E-Core count is 0!),
+    # XHCI-unsupported (hijacks 0xa0ed8086 onto Skylake AppleUSBXHCISPT, preventing XHCI@14000000 from creating ports!),
+    # & UTBDefault; add UTBMap & AppleALC; toggle NootedGreen
     new_kexts = []
     for kext in cfg["Kernel"]["Add"]:
         bpath = kext["BundlePath"]
-        if bpath in ("CpuTopologyRebuild.kext", "UTBDefault.kext"):
+        if bpath in ("CpuTopologyRebuild.kext", "UTBDefault.kext", "XHCI-unsupported.kext"):
             continue
         if bpath == "NootedGreen.kext":
             kext = copy.deepcopy(kext)
@@ -259,7 +260,7 @@ def build_efi() -> None:
         DIST_OC / "Kexts" / "UTBMap.kext",
         dirs_exist_ok=True,
     )
-    for kext_name in ("CpuTopologyRebuild.kext", "UTBDefault.kext"):
+    for kext_name in ("CpuTopologyRebuild.kext", "UTBDefault.kext", "XHCI-unsupported.kext"):
         kdir = DIST_OC / "Kexts" / kext_name
         if kdir.exists():
             shutil.rmtree(kdir)
