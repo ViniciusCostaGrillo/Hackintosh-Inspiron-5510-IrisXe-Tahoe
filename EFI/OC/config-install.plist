@@ -1514,7 +1514,7 @@
 				AAAAAAAAAAAAAAAAAAA=
 				</data>
 				<key>boot-args</key>
-				<string>keepsyms=1 -vi2c-force-polling -v debug=0x100 -wegnoigpu</string>
+				<string>keepsyms=1 -vi2c-force-polling -v debug=0x100 -wegnoigpu gfxrst=1</string>
 				<key>csr-active-config</key>
 				<data>
 				EwoAAA==
@@ -1791,7 +1791,7 @@
 			<key>ReplaceTabWithSpace</key>
 			<false/>
 			<key>Resolution</key>
-			<string>1024x768</string>
+			<string>Max</string>
 			<key>SanitiseClearScreen</key>
 			<false/>
 			<key>TextRenderer</key>
