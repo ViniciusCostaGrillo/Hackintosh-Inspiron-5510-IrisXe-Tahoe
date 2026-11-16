@@ -146,13 +146,32 @@ def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
             )
     cfg["Kernel"]["Add"] = new_kexts
 
-    # 5. Kernel > Emulate: Ice Lake / Comet Lake CPUID spoof for 4C/8T Tiger Lake-H35 (no hybrid E-core EBX override)
-    cfg["Kernel"]["Emulate"]["Cpuid1Data"] = bytes.fromhex("65060A00000000000000000000000000")
-    cfg["Kernel"]["Emulate"]["Cpuid1Mask"] = bytes.fromhex("FFFFFFFF000000000000000000000000")
+    # 5. Booter > MmioWhitelist: whitelist Dell Inspiron 15 5510 Tiger Lake runtime MMIO regions
+    # (0xC0000000 PCIe ECAM, 0xFD000000 SBREG, 0xFE000000 PMC, 0xFE010000 SPI BAR0, 0xFED00000 HPET/VT-d, 0xFEE00000 LAPIC, 0xFF000000 Flash)
+    cfg["Booter"]["MmioWhitelist"] = [
+        {"Address": 0xC0000000, "Comment": "PCIe ECAM/MCFG 0xC0000000", "Enabled": True},
+        {"Address": 0xFD000000, "Comment": "Tiger Lake PCH SBREG_BAR 0xFD000000", "Enabled": True},
+        {"Address": 0xFE000000, "Comment": "Tiger Lake PMC/P2SB MMIO 0xFE000000", "Enabled": True},
+        {"Address": 0xFE010000, "Comment": "Tiger Lake SPI BAR0 Runtime NVRAM 0xFE010000", "Enabled": True},
+        {"Address": 0xFED00000, "Comment": "HPET / IOAPIC / VT-d 0xFED00000", "Enabled": True},
+        {"Address": 0xFEE00000, "Comment": "Local APIC 0xFEE00000", "Enabled": True},
+        {"Address": 0xFF000000, "Comment": "System Firmware Flash ROM 0xFF000000", "Enabled": True},
+    ]
 
-    # 6. Misc > Boot: Timeout = 5s and HideAuxiliary = False so recovery DMG and Reset NVRAM appear immediately
+    # 6. Kernel > Emulate: Comet Lake CPUID (0x000A0655) + EBX[23:16]=0x80 (128 logical_per_package)
+    # Required because Core i5-11320H reports CPUID(4) max_cores_per_package=8 (> 4 active cores) and
+    # CPUID(1) logical_per_package=16; ProvideCurrentCpuInfo patches cores_per_package to 128, so without
+    # EBX[23:16]=0x80 XNU computes threads_per_core = 16/128 = 0 and divides by zero right after EXITBS:START!
+    cfg["Kernel"]["Emulate"]["Cpuid1Data"] = bytes.fromhex("55060A00000080000000000000000000")
+    cfg["Kernel"]["Emulate"]["Cpuid1Mask"] = bytes.fromhex("FFFFFFFF0000FF000000000000000000")
+
+    # 6. Misc > Boot & Debug: Timeout = 5s, HideAuxiliary = False, file logging enabled in install mode
     cfg["Misc"]["Boot"]["Timeout"] = 5
     cfg["Misc"]["Boot"]["HideAuxiliary"] = False
+    if not accelerated:
+        cfg["Misc"]["Debug"]["AppleDebug"] = True
+        cfg["Misc"]["Debug"]["ApplePanic"] = True
+        cfg["Misc"]["Debug"]["Target"] = 67
 
     # 7. NVRAM: CPU name, boot-args, and Delete > boot-args
     oc_vendor_guid = "4D1FDA02-38C7-4A6A-9CC6-4BCCA8B30102"

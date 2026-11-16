@@ -45,6 +45,10 @@ def test_usb_configs_quirks_security_and_boot_args():
         assert cfg["Kernel"]["Quirks"]["CustomSMBIOSGuid"] is True
         assert cfg["PlatformInfo"]["UpdateSMBIOSMode"] == "Custom"
 
+        # Verify Cpuid1Data and Cpuid1Mask include EBX[23:16]=0x80 to prevent divide-by-zero after EXITBS
+        assert cfg["Kernel"]["Emulate"]["Cpuid1Data"] == bytes.fromhex("55060A00000080000000000000000000")
+        assert cfg["Kernel"]["Emulate"]["Cpuid1Mask"] == bytes.fromhex("FFFFFFFF0000FF000000000000000000")
+
         # Real SMBIOS serials on USB (not placeholders)
         gen = cfg["PlatformInfo"]["Generic"]
         assert gen["SystemProductName"] == "MacBookPro16,2"

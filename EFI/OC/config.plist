@@ -381,15 +381,47 @@
 				<key>Address</key>
 				<integer>3221225472</integer>
 				<key>Comment</key>
-				<string>PCIe ECAM/MCFG 0xC0000000 (256MB) - NAO devirtualizar</string>
+				<string>PCIe ECAM/MCFG 0xC0000000</string>
 				<key>Enabled</key>
 				<true/>
 			</dict>
 			<dict>
 				<key>Address</key>
-				<integer>4177526784</integer>
+				<integer>4244635648</integer>
 				<key>Comment</key>
-				<string>0xF9000000</string>
+				<string>Tiger Lake PCH SBREG_BAR 0xFD000000</string>
+				<key>Enabled</key>
+				<true/>
+			</dict>
+			<dict>
+				<key>Address</key>
+				<integer>4261412864</integer>
+				<key>Comment</key>
+				<string>Tiger Lake PMC/P2SB MMIO 0xFE000000</string>
+				<key>Enabled</key>
+				<true/>
+			</dict>
+			<dict>
+				<key>Address</key>
+				<integer>4261478400</integer>
+				<key>Comment</key>
+				<string>Tiger Lake SPI BAR0 Runtime NVRAM 0xFE010000</string>
+				<key>Enabled</key>
+				<true/>
+			</dict>
+			<dict>
+				<key>Address</key>
+				<integer>4275044352</integer>
+				<key>Comment</key>
+				<string>HPET / IOAPIC / VT-d 0xFED00000</string>
+				<key>Enabled</key>
+				<true/>
+			</dict>
+			<dict>
+				<key>Address</key>
+				<integer>4276092928</integer>
+				<key>Comment</key>
+				<string>Local APIC 0xFEE00000</string>
 				<key>Enabled</key>
 				<true/>
 			</dict>
@@ -397,7 +429,7 @@
 				<key>Address</key>
 				<integer>4278190080</integer>
 				<key>Comment</key>
-				<string>0xFF000000</string>
+				<string>System Firmware Flash ROM 0xFF000000</string>
 				<key>Enabled</key>
 				<true/>
 			</dict>
@@ -1108,11 +1140,11 @@
 		<dict>
 			<key>Cpuid1Data</key>
 			<data>
-			ZQYKAAAAAAAAAAAAAAAAAA==
+			VQYKAAAAgAAAAAAAAAAAAA==
 			</data>
 			<key>Cpuid1Mask</key>
 			<data>
-			/////wAAAAAAAAAAAAAAAA==
+			/////wAA/wAAAAAAAAAAAA==
 			</data>
 			<key>DummyPowerManagement</key>
 			<false/>
