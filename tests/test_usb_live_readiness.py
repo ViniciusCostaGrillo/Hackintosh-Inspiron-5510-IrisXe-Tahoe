@@ -62,11 +62,13 @@ def test_usb_configs_quirks_security_and_boot_args():
 
     boot_guid = "7C436110-AB2A-4BBB-A880-FE41995C9F82"
     inst_args = inst["NVRAM"]["Add"][boot_guid]["boot-args"]
-    for flag in ("-v", "-wegnoigpu", "-vi2c-force-polling", "amfi_get_out_of_my_way=1", "alcid=11"):
-        assert flag in inst_args, f"Missing {flag} in install boot-args: {inst_args}"
+    assert inst_args == "keepsyms=1 -vi2c-force-polling -v", f"Unexpected install boot-args: {inst_args}"
+    assert inst["UEFI"]["Output"]["Resolution"] == "1024x768"
+    assert inst["NVRAM"]["LegacyOverwrite"] is True
 
-    # Ensure PciRoot(0x0)/Pci(0x2,0x0) is absent in install config so -wegnoigpu disables IGPU cleanly
-    assert "PciRoot(0x0)/Pci(0x2,0x0)" not in inst["DeviceProperties"]["Add"]
+    inst_gfx = inst["DeviceProperties"]["Add"]["PciRoot(0x0)/Pci(0x2,0x0)"]
+    assert inst_gfx["device-id"] == bytes.fromhex("499A0000")
+    assert inst_gfx["AAPL,ig-platform-id"] == bytes.fromhex("0000499A")
 
     acc_args = acc["NVRAM"]["Add"][boot_guid]["boot-args"]
     for flag in (

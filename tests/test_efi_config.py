@@ -60,7 +60,9 @@ def test_nvram_boot_args_and_smbios_populated():
     assert "ngreen-dmc=adlp" not in accel_args
 
     inst_args = load_plist("config-install.plist")["NVRAM"]["Add"][nvram_guid]["boot-args"]
-    assert "-wegnoigpu" in inst_args
+    assert inst_args == "keepsyms=1 -vi2c-force-polling -v"
+    assert load_plist("config-install.plist")["UEFI"]["Output"]["Resolution"] == "1024x768"
+    assert load_plist("config-install.plist")["NVRAM"]["LegacyOverwrite"] is True
 
 
 class TestEfiConfig(unittest.TestCase):
