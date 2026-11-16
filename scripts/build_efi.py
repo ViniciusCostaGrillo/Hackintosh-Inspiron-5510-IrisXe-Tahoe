@@ -59,7 +59,7 @@ def generate_smbios() -> dict:
 def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
     cfg = copy.deepcopy(cfg)
 
-    # 1. ACPI > Add: replace SSDT-XPS-I2C.aml with SSDT-I2C1.aml
+    # 1. ACPI > Add: replace SSDT-XPS-I2C.aml with SSDT-I2C1.aml and SSDT-PLUG-ALT.aml with SSDT-PLUG.aml
     new_acpi_add = []
     for entry in cfg["ACPI"]["Add"]:
         if entry["Path"] == "SSDT-XPS-I2C.aml":
@@ -70,18 +70,49 @@ def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
                     "Path": "SSDT-I2C1.aml",
                 }
             )
+        elif entry["Path"] == "SSDT-PLUG-ALT.aml":
+            new_acpi_add.append(
+                {
+                    "Comment": "Dell Inspiron 15 5510 XCPM plugin-type=1 on native _SB.PR00",
+                    "Enabled": True,
+                    "Path": "SSDT-PLUG.aml",
+                }
+            )
         else:
             new_acpi_add.append(entry)
     cfg["ACPI"]["Add"] = new_acpi_add
 
-    # 2. ACPI > Patch: keep generic renames + I2C0/I2C1 _ADR to XADR (verified count=1 in Inspiron DSDT);
-    # remove XPS-specific TPL0/TPD0 _INI/_CRS and RHUB.HS08 patches
+    # 2. ACPI > Patch:
+    # - Set Count=1 on GPI0 _STA to XSTA so _SB.EPC._STA is NOT renamed (renaming EPC._STA causes EPC._CRS to return 0xFFFFFFFFFFFFFFFF!)
+    # - Replace XPS RHUB.HS08 patch with Dell Inspiron 15 5510 RHUB.HS14 patch (fixes AE_NOT_FOUND on _SB.PC00.XHCI.RHUB.HS14)
     keep_patches = []
     for patch in cfg["ACPI"]["Patch"]:
         comment = patch.get("Comment", "")
         if any(tag in comment for tag in ("TPL0", "TPD0", "RHUB.HS08")):
             continue
+        patch = copy.deepcopy(patch)
+        if "GPI0 _STA to XSTA" in comment:
+            patch["Count"] = 1
         keep_patches.append(patch)
+
+    keep_patches.append(
+        {
+            "Base": "",
+            "BaseSkip": 0,
+            "Comment": "Dell Inspiron 5510: Scope RHUB.HS14 to RHUB (HS14 is PCH-H conditional)",
+            "Count": 1,
+            "Enabled": True,
+            "Find": bytes.fromhex("104b202f055f53425f50433030584843495248554248533134"),
+            "Limit": 0,
+            "Mask": b"",
+            "OemTableId": b"",
+            "Replace": bytes.fromhex("104b202f045f53425f504330305848434952485542a3a3a3a3"),
+            "ReplaceMask": b"",
+            "Skip": 0,
+            "TableLength": 0,
+            "TableSignature": bytes.fromhex("44534454"),
+        }
+    )
     cfg["ACPI"]["Patch"] = keep_patches
 
     # 3. DeviceProperties > Add: Native 8086:9A49 Iris Xe on GFX0 (or safe VESA dummy ID in install mode) + Realtek ALC236 audio on HDAS
@@ -108,12 +139,16 @@ def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
         "layout-id": (11).to_bytes(4, byteorder="little"),
     }
 
-    # 4. Kernel > Add: disable/remove CpuTopologyRebuild & UTBDefault; add UTBMap & AppleALC; toggle NootedGreen
+    # 4. Kernel > Add: keep CpuTopologyRebuild (rebuilds Dell's de-interleaved 0,2,4,6,1,3,5,7 MADT APIC IDs);
+    # remove UTBDefault; add UTBMap & AppleALC; toggle NootedGreen
     new_kexts = []
     for kext in cfg["Kernel"]["Add"]:
         bpath = kext["BundlePath"]
-        if bpath in ("CpuTopologyRebuild.kext", "UTBDefault.kext"):
+        if bpath in ("UTBDefault.kext",):
             continue
+        if bpath == "CpuTopologyRebuild.kext":
+            kext = copy.deepcopy(kext)
+            kext["Enabled"] = True
         if bpath == "NootedGreen.kext":
             kext = copy.deepcopy(kext)
             kext["Enabled"] = accelerated
@@ -208,13 +243,15 @@ def build_efi() -> None:
         DIST_OC / "Drivers" / "HfsPlus.efi",
     )
 
-    # Copy SSDT-I2C1.aml and remove SSDT-XPS-I2C.aml
+    # Copy SSDT-I2C1.aml and SSDT-PLUG.aml; remove SSDT-XPS-I2C.aml and SSDT-PLUG-ALT.aml
     shutil.copy2(ACPI_CUSTOM / "SSDT-I2C1.aml", DIST_OC / "ACPI" / "SSDT-I2C1.aml")
-    xps_i2c = DIST_OC / "ACPI" / "SSDT-XPS-I2C.aml"
-    if xps_i2c.exists():
-        xps_i2c.unlink()
+    shutil.copy2(ACPI_CUSTOM / "SSDT-PLUG.aml", DIST_OC / "ACPI" / "SSDT-PLUG.aml")
+    for old_aml in ("SSDT-XPS-I2C.aml", "SSDT-PLUG-ALT.aml"):
+        p = DIST_OC / "ACPI" / old_aml
+        if p.exists():
+            p.unlink()
 
-    # Copy AppleALC.kext and UTBMap.kext; remove XPS-only kexts
+    # Copy AppleALC.kext and UTBMap.kext; remove XPS-only UTBDefault.kext
     shutil.copytree(
         DEPS / "AppleALC" / "AppleALC.kext",
         DIST_OC / "Kexts" / "AppleALC.kext",
@@ -225,7 +262,7 @@ def build_efi() -> None:
         DIST_OC / "Kexts" / "UTBMap.kext",
         dirs_exist_ok=True,
     )
-    for kext_name in ("CpuTopologyRebuild.kext", "UTBDefault.kext"):
+    for kext_name in ("UTBDefault.kext",):
         kdir = DIST_OC / "Kexts" / kext_name
         if kdir.exists():
             shutil.rmtree(kdir)

@@ -25,15 +25,16 @@ def build_acpi() -> None:
         if dsdt_aml.is_file():
             subprocess.run([str(iasl), "-d", str(dsdt_aml)], cwd=str(ACPI_DUMP), check=False)
 
-    # 2. Compile custom SSDT-I2C1.dsl -> SSDT-I2C1.aml
-    dsl_path = ACPI_CUSTOM / "SSDT-I2C1.dsl"
-    aml_path = ACPI_CUSTOM / "SSDT-I2C1.aml"
-    subprocess.run(
-        [str(iasl), "-oa", "-p", str(aml_path.with_suffix("")), str(dsl_path)],
-        check=True,
-    )
-    if not aml_path.is_file():
-        raise FileNotFoundError(f"Expected compiled AML at {aml_path}")
+    # 2. Compile custom SSDT-I2C1.dsl and SSDT-PLUG.dsl -> .aml
+    for name in ("SSDT-I2C1", "SSDT-PLUG"):
+        dsl_path = ACPI_CUSTOM / f"{name}.dsl"
+        aml_path = ACPI_CUSTOM / f"{name}.aml"
+        subprocess.run(
+            [str(iasl), "-oa", "-p", str(aml_path.with_suffix("")), str(dsl_path)],
+            check=True,
+        )
+        if not aml_path.is_file():
+            raise FileNotFoundError(f"Expected compiled AML at {aml_path}")
 
 
 if __name__ == "__main__":

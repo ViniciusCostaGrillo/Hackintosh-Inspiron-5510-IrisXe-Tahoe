@@ -24,14 +24,16 @@ def test_xps_specific_items_removed_and_inspiron_added():
     cfg = load_plist("config.plist")
     acpi_names = [a["Path"] for a in cfg["ACPI"]["Add"] if a["Enabled"]]
     assert "SSDT-XPS-I2C.aml" not in acpi_names
+    assert "SSDT-PLUG-ALT.aml" not in acpi_names
     assert "SSDT-I2C1.aml" in acpi_names
+    assert "SSDT-PLUG.aml" in acpi_names
 
     assert (DIST_OC / "Drivers" / "HfsPlus.efi").is_file()
     driver_paths = [d["Path"] for d in cfg["UEFI"]["Drivers"] if d["Enabled"]]
     assert "HfsPlus.efi" in driver_paths
 
     kext_paths = {k["BundlePath"]: k["Enabled"] for k in cfg["Kernel"]["Add"]}
-    assert kext_paths.get("CpuTopologyRebuild.kext", False) is False
+    assert kext_paths.get("CpuTopologyRebuild.kext") is True
     assert kext_paths.get("UTBDefault.kext", False) is False
     assert kext_paths.get("UTBMap.kext") is True
     assert kext_paths.get("AppleALC.kext") is True
