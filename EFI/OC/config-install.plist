@@ -699,6 +699,42 @@
 				<key>Arch</key>
 				<string>Any</string>
 				<key>BundlePath</key>
+				<string>AMFIPass.kext</string>
+				<key>Comment</key>
+				<string>AMFIPass Mod 1.4.1 for WhateverXe</string>
+				<key>Enabled</key>
+				<false/>
+				<key>ExecutablePath</key>
+				<string>Contents/MacOS/AMFIPass</string>
+				<key>MaxKernel</key>
+				<string></string>
+				<key>MinKernel</key>
+				<string>21.0.0</string>
+				<key>PlistPath</key>
+				<string>Contents/Info.plist</string>
+			</dict>
+			<dict>
+				<key>Arch</key>
+				<string>Any</string>
+				<key>BundlePath</key>
+				<string>WhateverXe.kext</string>
+				<key>Comment</key>
+				<string>WhateverXe Lilu Plugin for Intel Xe-LP</string>
+				<key>Enabled</key>
+				<false/>
+				<key>ExecutablePath</key>
+				<string>Contents/MacOS/WhateverXe</string>
+				<key>MaxKernel</key>
+				<string></string>
+				<key>MinKernel</key>
+				<string></string>
+				<key>PlistPath</key>
+				<string>Contents/Info.plist</string>
+			</dict>
+			<dict>
+				<key>Arch</key>
+				<string>Any</string>
+				<key>BundlePath</key>
 				<string>AppleALC.kext</string>
 				<key>Comment</key>
 				<string>Realtek ALC236 HDA Audio</string>
@@ -1153,7 +1189,7 @@
 				<key>Comment</key>
 				<string>fallback (needs HeliPort); disabled in favour of AirportItlwm</string>
 				<key>Enabled</key>
-				<false/>
+				<true/>
 				<key>ExecutablePath</key>
 				<string>Contents/MacOS/itlwm</string>
 				<key>MaxKernel</key>
@@ -1188,11 +1224,11 @@
 		<dict>
 			<key>Cpuid1Data</key>
 			<data>
-			VQYKAAAAgAAAAAAAAAAAAA==
+			VQYKAAAAAAAAAAAAAAAAAA==
 			</data>
 			<key>Cpuid1Mask</key>
 			<data>
-			/////wAA/wAAAAAAAAAAAA==
+			/////wAAAAAAAAAAAAAAAA==
 			</data>
 			<key>DummyPowerManagement</key>
 			<false/>
@@ -1514,10 +1550,10 @@
 				AAAAAAAAAAAAAAAAAAA=
 				</data>
 				<key>boot-args</key>
-				<string>keepsyms=1 -vi2c-force-polling -v debug=0x100 -wegnoigpu gfxrst=1</string>
+				<string>keepsyms=1 -vi2c-force-polling -v debug=0x100 -igfxvesa</string>
 				<key>csr-active-config</key>
 				<data>
-				EwoAAA==
+				AwgAAA==
 				</data>
 				<key>prev-lang:kbd</key>
 				<data>
@@ -1791,7 +1827,7 @@
 			<key>ReplaceTabWithSpace</key>
 			<false/>
 			<key>Resolution</key>
-			<string>Max</string>
+			<string>1024x768</string>
 			<key>SanitiseClearScreen</key>
 			<false/>
 			<key>TextRenderer</key>

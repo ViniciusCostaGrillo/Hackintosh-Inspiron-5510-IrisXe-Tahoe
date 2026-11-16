@@ -29,9 +29,9 @@ $totalGB = [math]::Round($volC.Size / 1GB, 2)
 Write-Output "=== Dell Inspiron 15 5510 Dual-Boot Preparation ==="
 Write-Output "Volume C: Total = $totalGB GB | Free = $freeGB GB"
 
-if ($null -ne $macosVol) {
-    $macosGB = [math]::Round($macosVol.Size / 1GB, 2)
-    Write-Output "MACOS partition already exists ($($macosVol.DriveLetter): $macosGB GB). Skipping shrink calculation."
+if ($null -ne $macosVol -or $totalGB -le 135) {
+    $detail = if ($null -ne $macosVol) { "MACOS partition already exists ($($macosVol.DriveLetter))" } else { "Windows C: is already sized for dual-boot ($totalGB GB)" }
+    Write-Output "$detail. Skipping shrink calculation."
 } else {
     $targetWindowsGB = [math]::Round($totalGB - $ShrinkGB, 2)
     Write-Output "Planned macOS APFS allocation = $ShrinkGB GB | Remaining Windows C: = $targetWindowsGB GB"

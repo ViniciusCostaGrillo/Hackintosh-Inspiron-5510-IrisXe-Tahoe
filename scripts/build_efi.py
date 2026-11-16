@@ -25,8 +25,7 @@ ACCEL_BOOT_ARGS = (
 )
 
 INSTALL_BOOT_ARGS = (
-    "-v keepsyms=1 debug=0x100 -wegnoigpu -vi2c-force-polling "
-    "amfi_get_out_of_my_way=1 alcid=11"
+    "keepsyms=1 -vi2c-force-polling -v debug=0x100 -igfxvesa"
 )
 
 
@@ -202,8 +201,8 @@ def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
     # - DisableIoMapper = True because Dell Inspiron 15 5510 DMAR table contains a Reserved Memory Region (RMRR 0x6C000000..0x707FFFFF)
     # - Comet Lake CPUID (0x000A0655) + EBX[23:16]=0x80 (128 logical_per_package)
     cfg["Kernel"]["Quirks"]["DisableIoMapper"] = True
-    cfg["Kernel"]["Emulate"]["Cpuid1Data"] = bytes.fromhex("55060A00000080000000000000000000")
-    cfg["Kernel"]["Emulate"]["Cpuid1Mask"] = bytes.fromhex("FFFFFFFF0000FF000000000000000000")
+    cfg["Kernel"]["Emulate"]["Cpuid1Data"] = bytes.fromhex("55060A00000000000000000000000000")
+    cfg["Kernel"]["Emulate"]["Cpuid1Mask"] = bytes.fromhex("FFFFFFFF000000000000000000000000")
 
     # 6. Misc > Boot & Debug: Timeout = 5s, HideAuxiliary = False, file logging enabled in install mode
     cfg["Misc"]["Boot"]["Timeout"] = 5
