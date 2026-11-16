@@ -42,6 +42,7 @@ def test_usb_configs_quirks_security_and_boot_args():
         assert cfg["Misc"]["Security"]["DmgLoading"] == "Signed", f"{cfg_name}: DmgLoading must be Signed"
         assert cfg["UEFI"]["APFS"]["MinDate"] == -1 and cfg["UEFI"]["APFS"]["MinVersion"] == -1
         assert cfg["Kernel"]["Quirks"]["AppleXcpmCfgLock"] is True
+        assert cfg["Kernel"]["Quirks"]["DisableIoMapper"] is True
         assert cfg["Kernel"]["Quirks"]["CustomSMBIOSGuid"] is True
         assert cfg["PlatformInfo"]["UpdateSMBIOSMode"] == "Custom"
 
@@ -61,12 +62,11 @@ def test_usb_configs_quirks_security_and_boot_args():
 
     boot_guid = "7C436110-AB2A-4BBB-A880-FE41995C9F82"
     inst_args = inst["NVRAM"]["Add"][boot_guid]["boot-args"]
-    for flag in ("-v", "-igfxvesa", "-vi2c-force-polling", "amfi_get_out_of_my_way=1", "alcid=11"):
+    for flag in ("-v", "-wegnoigpu", "-vi2c-force-polling", "amfi_get_out_of_my_way=1", "alcid=11"):
         assert flag in inst_args, f"Missing {flag} in install boot-args: {inst_args}"
 
-    # Safe VESA device-id in install config so TGL kext never attaches unpatched
-    inst_gfx = inst["DeviceProperties"]["Add"]["PciRoot(0x0)/Pci(0x2,0x0)"]
-    assert inst_gfx["device-id"] == bytes.fromhex("FFFF0000")
+    # Ensure PciRoot(0x0)/Pci(0x2,0x0) is absent in install config so -wegnoigpu disables IGPU cleanly
+    assert "PciRoot(0x0)/Pci(0x2,0x0)" not in inst["DeviceProperties"]["Add"]
 
     acc_args = acc["NVRAM"]["Add"][boot_guid]["boot-args"]
     for flag in (

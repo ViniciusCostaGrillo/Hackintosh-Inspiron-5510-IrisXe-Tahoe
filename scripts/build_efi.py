@@ -25,7 +25,7 @@ ACCEL_BOOT_ARGS = (
 )
 
 INSTALL_BOOT_ARGS = (
-    "-v keepsyms=1 debug=0x100 -igfxvesa -vi2c-force-polling "
+    "-v keepsyms=1 debug=0x100 -wegnoigpu -vi2c-force-polling "
     "amfi_get_out_of_my_way=1 alcid=11"
 )
 
@@ -115,7 +115,8 @@ def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
     )
     cfg["ACPI"]["Patch"] = keep_patches
 
-    # 3. DeviceProperties > Add: Native 8086:9A49 Iris Xe on GFX0 (or safe VESA dummy ID in install mode) + Realtek ALC236 audio on HDAS
+    # 3. DeviceProperties > Add: Native 8086:9A49 Iris Xe on GFX0 in accelerated mode;
+    # in install mode (-wegnoigpu), remove PciRoot(0x0)/Pci(0x2,0x0) so WhateverGreen disables IGPU cleanly
     if accelerated:
         cfg["DeviceProperties"]["Add"]["PciRoot(0x0)/Pci(0x2,0x0)"] = {
             "AAPL,ig-platform-id": bytes.fromhex("0000499A"),
@@ -131,10 +132,7 @@ def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
             "rps-control": bytes.fromhex("01000000"),
         }
     else:
-        cfg["DeviceProperties"]["Add"]["PciRoot(0x0)/Pci(0x2,0x0)"] = {
-            "AAPL,ig-platform-id": bytes.fromhex("78563412"),
-            "device-id": bytes.fromhex("FFFF0000"),
-        }
+        cfg["DeviceProperties"]["Add"].pop("PciRoot(0x0)/Pci(0x2,0x0)", None)
     cfg["DeviceProperties"]["Add"]["PciRoot(0x0)/Pci(0x1F,0x3)"] = {
         "layout-id": (11).to_bytes(4, byteorder="little"),
     }
@@ -191,10 +189,10 @@ def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
         {"Address": 0xFF000000, "Comment": "System Firmware Flash ROM 0xFF000000", "Enabled": True},
     ]
 
-    # 6. Kernel > Emulate: Comet Lake CPUID (0x000A0655) + EBX[23:16]=0x80 (128 logical_per_package)
-    # Required because Core i5-11320H reports CPUID(4) max_cores_per_package=8 (> 4 active cores) and
-    # CPUID(1) logical_per_package=16; ProvideCurrentCpuInfo patches cores_per_package to 128, so without
-    # EBX[23:16]=0x80 XNU computes threads_per_core = 16/128 = 0 and divides by zero right after EXITBS:START!
+    # 6. Kernel > Quirks & Emulate:
+    # - DisableIoMapper = True because Dell Inspiron 15 5510 DMAR table contains a Reserved Memory Region (RMRR 0x6C000000..0x707FFFFF)
+    # - Comet Lake CPUID (0x000A0655) + EBX[23:16]=0x80 (128 logical_per_package)
+    cfg["Kernel"]["Quirks"]["DisableIoMapper"] = True
     cfg["Kernel"]["Emulate"]["Cpuid1Data"] = bytes.fromhex("55060A00000080000000000000000000")
     cfg["Kernel"]["Emulate"]["Cpuid1Mask"] = bytes.fromhex("FFFFFFFF0000FF000000000000000000")
 

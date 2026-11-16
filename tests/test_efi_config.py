@@ -60,7 +60,7 @@ def test_nvram_boot_args_and_smbios_populated():
     assert "ngreen-dmc=adlp" not in accel_args
 
     inst_args = load_plist("config-install.plist")["NVRAM"]["Add"][nvram_guid]["boot-args"]
-    assert "-igfxvesa" in inst_args
+    assert "-wegnoigpu" in inst_args
 
 
 class TestEfiConfig(unittest.TestCase):

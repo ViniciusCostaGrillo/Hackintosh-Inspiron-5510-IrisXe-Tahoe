@@ -565,17 +565,6 @@
 				CwAAAA==
 				</data>
 			</dict>
-			<key>PciRoot(0x0)/Pci(0x2,0x0)</key>
-			<dict>
-				<key>AAPL,ig-platform-id</key>
-				<data>
-				eFY0Eg==
-				</data>
-				<key>device-id</key>
-				<data>
-				//8AAA==
-				</data>
-			</dict>
 		</dict>
 		<key>Delete</key>
 		<dict/>
@@ -1272,7 +1261,7 @@
 			<key>CustomSMBIOSGuid</key>
 			<true/>
 			<key>DisableIoMapper</key>
-			<false/>
+			<true/>
 			<key>DisableIoMapperMapping</key>
 			<false/>
 			<key>DisableLinkeditJettison</key>
@@ -1457,7 +1446,7 @@
 				AAAAAAAAAAAAAAAAAAA=
 				</data>
 				<key>boot-args</key>
-				<string>-v keepsyms=1 debug=0x100 -igfxvesa -vi2c-force-polling amfi_get_out_of_my_way=1 alcid=11</string>
+				<string>-v keepsyms=1 debug=0x100 -wegnoigpu -vi2c-force-polling amfi_get_out_of_my_way=1 alcid=11</string>
 				<key>csr-active-config</key>
 				<data>
 				EwoAAA==
