@@ -681,6 +681,10 @@
 				<data>
 				AA==
 				</data>
+				<key>complete-modeset</key>
+				<data>
+				AQAAAA==
+				</data>
 				<key>device-id</key>
 				<data>
 				SZoAAA==
@@ -699,6 +703,8 @@
 				</data>
 				<key>hda-gfx</key>
 				<string>onboard-1</string>
+				<key>model</key>
+				<string>Intel Iris Xe Graphics</string>
 				<key>rps-control</key>
 				<data>
 				AQAAAA==
@@ -1170,13 +1176,13 @@
 				<key>Comment</key>
 				<string>teste NootedGreen Tahoe (2026-10-16)</string>
 				<key>Enabled</key>
-				<false/>
+				<true/>
 				<key>ExecutablePath</key>
 				<string>Contents/MacOS/NootedGreen</string>
 				<key>MaxKernel</key>
 				<string></string>
 				<key>MinKernel</key>
-				<string>25.0.0</string>
+				<string></string>
 				<key>PlistPath</key>
 				<string>Contents/Info.plist</string>
 			</dict>
@@ -1549,7 +1555,7 @@
 				AAAAAAAAAAAAAAAAAAA=
 				</data>
 				<key>boot-args</key>
-				<string>keepsyms=1 -vi2c-force-polling -v -igfxvesa debug=0x100</string>
+				<string>-v keepsyms=1 debug=0x100 IGLogLevel=3 -ngreentglwithgfx -allow3d -disablegfxfirmware ngreen-dmc=tgl -ngreenv189 -ngreenkeepefi -ngreenxefix -ngreenfixbootmode amfi_get_out_of_my_way=1 ngreenSched=4 ngreenV142=3 gfxrst=1 ngreenpm=22</string>
 				<key>csr-active-config</key>
 				<data>
 				EwoAAA==
