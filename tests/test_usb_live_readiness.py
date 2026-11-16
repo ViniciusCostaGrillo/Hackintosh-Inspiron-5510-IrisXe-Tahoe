@@ -42,7 +42,7 @@ def test_usb_configs_quirks_security_and_boot_args():
         assert cfg["Misc"]["Security"]["DmgLoading"] == "Signed", f"{cfg_name}: DmgLoading must be Signed"
         assert cfg["UEFI"]["APFS"]["MinDate"] == -1 and cfg["UEFI"]["APFS"]["MinVersion"] == -1
         assert cfg["Kernel"]["Quirks"]["AppleXcpmCfgLock"] is True
-        assert cfg["Kernel"]["Quirks"]["DisableIoMapper"] is True
+        assert cfg["Kernel"]["Quirks"]["DisableIoMapper"] is False
         assert cfg["Kernel"]["Quirks"]["CustomSMBIOSGuid"] is True
         assert cfg["PlatformInfo"]["UpdateSMBIOSMode"] == "Custom"
 
@@ -106,7 +106,7 @@ def test_usb_acpi_tables_and_patches_against_real_dsdt():
         aml_file = USB_OC / "ACPI" / entry["Path"]
         assert aml_file.is_file(), f"Missing ACPI table on USB: {aml_file}"
         raw = aml_file.read_bytes()
-        assert len(raw) > 36 and raw[:4] == b"SSDT", f"Invalid AML header in {aml_file}"
+        assert len(raw) > 36 and raw[:4] in (b"SSDT", b"DMAR"), f"Invalid AML header in {aml_file}"
 
     for patch in cfg["ACPI"]["Patch"]:
         if not patch.get("Enabled"):
