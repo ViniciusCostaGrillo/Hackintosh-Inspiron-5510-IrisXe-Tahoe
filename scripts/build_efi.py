@@ -143,12 +143,15 @@ def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
     new_kexts = []
     for kext in cfg["Kernel"]["Add"]:
         bpath = kext["BundlePath"]
-        if bpath in ("CpuTopologyRebuild.kext", "UTBDefault.kext", "XHCI-unsupported.kext"):
+        if bpath in (
+            "CpuTopologyRebuild.kext",
+            "UTBDefault.kext",
+            "XHCI-unsupported.kext",
+            "VoodooPS2Controller.kext/Contents/PlugIns/VoodooPS2Mouse.kext",
+            "VoodooPS2Controller.kext/Contents/PlugIns/VoodooPS2Trackpad.kext",
+        ):
             continue
-        if bpath == "NootedGreen.kext":
-            kext = copy.deepcopy(kext)
-            kext["Enabled"] = accelerated
-        if bpath == "AirportItlwm.kext":
+        if bpath in ("NootedGreen.kext", "AirportItlwm.kext", "BrightnessKeys.kext", "SMCBatteryManager.kext"):
             kext = copy.deepcopy(kext)
             kext["Enabled"] = accelerated
         if bpath == "itlwm.kext":
@@ -268,6 +271,21 @@ def build_efi() -> None:
         kdir = DIST_OC / "Kexts" / kext_name
         if kdir.exists():
             shutil.rmtree(kdir)
+
+    # Patch VoodooI2C.kext and VoodooGPIO.kext Info.plist to include Tiger Lake-LP IDs (0xa0e88086&0xFFFCFFFF and INT34C5)
+    vi2c_plist = DIST_OC / "Kexts" / "VoodooI2C.kext" / "Contents" / "Info.plist"
+    vi2c_data = plistlib.loads(vi2c_plist.read_bytes())
+    adl_ctrl = vi2c_data["IOKitPersonalities"]["VoodooI2CPCIAlderRaptorLakeController"]
+    if "0xa0e88086" not in adl_ctrl["IOPCIMatch"]:
+        adl_ctrl["IOPCIMatch"] = "0xa0e88086&0xFFFCFFFF 0x43e88086&0xFFFCFFFF " + adl_ctrl["IOPCIMatch"]
+    vi2c_plist.write_bytes(plistlib.dumps(vi2c_data))
+
+    vgpio_plist = DIST_OC / "Kexts" / "VoodooI2C.kext" / "Contents" / "PlugIns" / "VoodooGPIO.kext" / "Contents" / "Info.plist"
+    vgpio_data = plistlib.loads(vgpio_plist.read_bytes())
+    tgl_gpio = vgpio_data["IOKitPersonalities"]["VoodooGPIOTigerLakeLP"]
+    if "INT34C5" not in tgl_gpio["IONameMatch"]:
+        tgl_gpio["IONameMatch"] = ["INT34C5", "INT34C6"] + list(tgl_gpio["IONameMatch"])
+    vgpio_plist.write_bytes(plistlib.dumps(vgpio_data))
 
     base_cfg = plistlib.loads((BASE_REPO / "EFI" / "OC" / "config.plist").read_bytes())
     smbios = generate_smbios()

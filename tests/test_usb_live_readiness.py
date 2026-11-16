@@ -152,7 +152,8 @@ def test_usb_drivers_and_kext_binaries_and_load_order():
 
         # Verify dependency ordering
         assert enabled_kexts[0] == "Lilu.kext", "Lilu.kext must be loaded first"
-        assert enabled_kexts.index("VirtualSMC.kext") < enabled_kexts.index("SMCBatteryManager.kext")
+        if "SMCBatteryManager.kext" in enabled_kexts:
+            assert enabled_kexts.index("VirtualSMC.kext") < enabled_kexts.index("SMCBatteryManager.kext")
         assert enabled_kexts.index("VirtualSMC.kext") < enabled_kexts.index("SMCProcessor.kext")
         assert enabled_kexts.index("USBToolBox.kext") < enabled_kexts.index("UTBMap.kext")
         assert enabled_kexts.index("VoodooI2C.kext/Contents/PlugIns/VoodooI2CServices.kext") < enabled_kexts.index("VoodooI2C.kext")

@@ -108,6 +108,8 @@
 			<string>VoodooGPIOTigerLakeLP</string>
 			<key>IONameMatch</key>
 			<array>
+				<string>INT34C5</string>
+				<string>INT34C6</string>
 				<string>INTC1055</string>
 			</array>
 			<key>IOProviderClass</key>
