@@ -139,16 +139,13 @@ def configure_plist(cfg: dict, smbios: dict, accelerated: bool) -> dict:
         "layout-id": (11).to_bytes(4, byteorder="little"),
     }
 
-    # 4. Kernel > Add: keep CpuTopologyRebuild (rebuilds Dell's de-interleaved 0,2,4,6,1,3,5,7 MADT APIC IDs);
-    # remove UTBDefault; add UTBMap & AppleALC; toggle NootedGreen
+    # 4. Kernel > Add: remove CpuTopologyRebuild (divides by zero at +6794 when E-Core count is 0!) & UTBDefault;
+    # add UTBMap & AppleALC; toggle NootedGreen
     new_kexts = []
     for kext in cfg["Kernel"]["Add"]:
         bpath = kext["BundlePath"]
-        if bpath in ("UTBDefault.kext",):
+        if bpath in ("CpuTopologyRebuild.kext", "UTBDefault.kext"):
             continue
-        if bpath == "CpuTopologyRebuild.kext":
-            kext = copy.deepcopy(kext)
-            kext["Enabled"] = True
         if bpath == "NootedGreen.kext":
             kext = copy.deepcopy(kext)
             kext["Enabled"] = accelerated
@@ -262,7 +259,7 @@ def build_efi() -> None:
         DIST_OC / "Kexts" / "UTBMap.kext",
         dirs_exist_ok=True,
     )
-    for kext_name in ("UTBDefault.kext",):
+    for kext_name in ("CpuTopologyRebuild.kext", "UTBDefault.kext"):
         kdir = DIST_OC / "Kexts" / kext_name
         if kdir.exists():
             shutil.rmtree(kdir)

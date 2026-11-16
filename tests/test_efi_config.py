@@ -33,7 +33,7 @@ def test_xps_specific_items_removed_and_inspiron_added():
     assert "HfsPlus.efi" in driver_paths
 
     kext_paths = {k["BundlePath"]: k["Enabled"] for k in cfg["Kernel"]["Add"]}
-    assert kext_paths.get("CpuTopologyRebuild.kext") is True
+    assert kext_paths.get("CpuTopologyRebuild.kext", False) is False
     assert kext_paths.get("UTBDefault.kext", False) is False
     assert kext_paths.get("UTBMap.kext") is True
     assert kext_paths.get("AppleALC.kext") is True
