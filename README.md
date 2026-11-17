@@ -23,6 +23,7 @@ Toda a história do projeto, decisões de arquitetura, especificações extraíd
 5. 🚀 **[04 — Passo a Passo Completo de Instalação (BIOS → Boot → macOS)](./docs/04-PASSO-A-PASSO-COMPLETO-DO-QUE-VOCE-VAI-FAZER.md)**
 6. ⚡ **[05 — Passo a Passo Exclusivo: Ativação da Placa Intel Iris Xe (Metal)](./docs/05-PASSO-A-PASSO-EXCLUSIVO-ATIVACAO-IRIS-XE.md)**
 7. ✅ **[06 — Compatibilidade: O Que Funciona, Limitações e Contornos no Dell 5510](./docs/06-COMPATIBILIDADE-E-O-QUE-FUNCIONA-OU-NAO-NO-SEU-DELL.md)**
+8. 🧠 **[07 — Base de Conhecimento Completa: Engenharia Tiger Lake & Resolução de Falhas](./docs/07-BASE-DE-CONHECIMENTO-COMPLETA-TIGER-LAKE-IRIS-XE.md)**
 
 ---
 

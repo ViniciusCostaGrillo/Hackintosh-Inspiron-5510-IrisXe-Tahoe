@@ -74,6 +74,11 @@
      * Copiamos o pacote offline `D:\irisxe-tahoe-bundle.tar.gz` (`81,85 MB`) e os manuais `LEIAME-INSTALACAO.md`, `04-PASSO-A-PASSO-COMPLETO-DO-QUE-VOCE-VAI-FAZER.md` e `05-PASSO-A-PASSO-EXCLUSIVO-ATIVACAO-IRIS-XE.md` para a raiz do pendrive `D:`.
      * Baixamos diretamente dos servidores da Apple (via `macrecovery.py`) e gravamos em `D:\com.apple.recovery.boot\` a imagem oficial de recuperação do macOS (`BaseSystem.dmg` com **960,53 MB** + `BaseSystem.chunklist`), verificada com sucesso!
 
+### 6. A Resolução Definitiva do Boot e a Base de Conhecimento (16/11/2026)
+* O travamento em `libignition` / `launchd` foi superado com a correção do spoof Comet Lake 4-core (`Cpuid1Data = 55060A00 00000000 00000000 00000000`), estabilização do SSD ADATA SM2P41C3 via `NVMeFix.kext` e modo gráfico VESA.
+* O instalador do macOS Tahoe 26.7.1 inicializou com sucesso no notebook!
+* Foram adicionados os arquivos pós-instalação para o ecossistema moderno `WhateverXe` (v0.8.2) + `AMFIPass` + `WhateverXe-Graphics-0.4.4.pkg` e o manual de base de conhecimento técnica em `07-BASE-DE-CONHECIMENTO-COMPLETA-TIGER-LAKE-IRIS-XE.md`.
+
 ---
 
 ## ⚖️ Resumo das Decisões Estratégicas e Técnicas
